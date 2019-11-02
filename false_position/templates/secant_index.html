@@ -56,18 +56,16 @@
 				<thead>
 					<tr>
 						<th>iteration</th>
-						<th>xu</th>
-						<th>xl</th>
 						<th>xr</th>
+						<th>fr</th>
 					</tr>
 				</thead>
 				<tbody>
 					{% for d in data %}
 					<tr>
 						<td>{{ d.iteration }}</td>
-						<td>{{ d.xu }}</td>
-						<td>{{ d.xl }}</td>
 						<td>{{ d.xr }}</td>
+						<td>{{ d.fr }}</td>
 					</tr>
 					{% endfor %}
 				</tbody>
@@ -104,13 +102,13 @@
 					<i class="fa fa-plus"></i>
 				</span>
 				<h3 class="kt-portlet__head-title">
-						Calculate False Position
+						Calculate Secant
 				</h3>
 			</div>
 		</div>
 
 		<!--begin::Form-->
-		<form class="kt-form kt-form--label-right" id="kt_form_1" action="{% url 'false-position-submit' %}" method="post">
+		<form class="kt-form kt-form--label-right" id="kt_form_1" action="{% url 'secant-submit' %}" method="post">
 			{% csrf_token %}
 			<div class="kt-portlet__body">
 				<div class="form-group form-group-last kt-hide">
@@ -132,12 +130,12 @@
 				</div>
 
 				<div class="form-group">
-					<label>Max X :</label>
+					<label>X0 :</label>
 					<input type="text" class="form-control" placeholder="Enter the maximum value of x" name="maxval">
 				</div>
 
 				<div class="form-group">
-					<label>Min X :</label>
+					<label>X1 :</label>
 					<input type="text" class="form-control" placeholder="Enter the maximum value of x" name="minval">
 				</div>
 

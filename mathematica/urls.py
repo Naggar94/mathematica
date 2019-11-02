@@ -18,5 +18,5 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('false-position/', include('false_position.urls')),
+    path('mathematica/', include('false_position.urls')),
 ]
