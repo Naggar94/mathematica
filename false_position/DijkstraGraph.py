@@ -14,6 +14,7 @@ class DijkstraGraph():
 
     def addEdge(self,u,v,w):
         self.graph[u][v] = w
+        self.graph[v][u] = w
   
     def printSolution(self, dist): 
         result = []
@@ -46,6 +47,8 @@ class DijkstraGraph():
         dist = [sys.maxsize] * self.V 
         dist[src] = 0
         sptSet = [False] * self.V 
+        connections = [-1 for column in range(self.V)]
+        connectionsWithWeight = [-1 for column in range(self.V)]
   
         for cout in range(self.V): 
   
@@ -65,5 +68,10 @@ class DijkstraGraph():
             for v in range(self.V): 
                 if self.graph[u][v] > 0 and sptSet[v] == False and dist[v] > dist[u] + self.graph[u][v]: 
                         dist[v] = dist[u] + self.graph[u][v] 
+                        connections[v] = u;
+                        connectionsWithWeight[v] = self.graph[u][v]
   
-        return self.printSolution(dist)
+        response = self.printSolution(dist);
+        result = []
+        result.append({"dijkstra": response, "connections": connections, "connectionsWithWeight": connectionsWithWeight})
+        return result

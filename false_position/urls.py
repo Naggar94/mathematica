@@ -11,4 +11,5 @@ urlpatterns = [
     path('brouvka/', views.brouvka_index, name='brouvka-index'),
     path('brouvka/submit/', views.brouvka_submit, name='brouvka-submit'),
     path('dijkstra/', views.dijkstra_index, name='dijkstra-index'),
+    path('dijkstra/submit/', views.dijkstra_submit, name='dijkstra-submit'),
 ]
