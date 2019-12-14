@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+	#cy {
+		width: 400px;
+		height: 300px;
+		background: red;
+		display: block;
+	}
+	#cy2 {
+		width: 400px;
+		height: 300px;
+		background: blue;
+		display: block;
+	}
+</style>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.9.4/cytoscape.min.js"></script>
+<script>
+	var edgeCount = 0;
+	function addEdge(){
+		edgeCount++;
+		var row = '<div class="form-group">';
+			row += '<label>Edge'+edgeCount+' :</label>';
+			row += '<div class="row">';
+				row += '<div class="col-md-4">';
+					row += '<input type="text" class="form-control" placeholder="From Node" name="edge['+edgeCount+'][from_node]">';
+				row += '</div>';
+				row += '<div class="col-md-4">';
+					row += '<input type="text" class="form-control" placeholder="To Node" name="edge['+edgeCount+'][to_node]">';
+				row += '</div>';
+				row += '<div class="col-md-4">';
+					row += '<input type="text" class="form-control" placeholder="Weight" name="edge['+edgeCount+'][weight]">';
+				row += '</div>';
+			row += '</div>';
+		row += '</div>';
+
+		$('#edges-section').append(row);
+	}
+	window.onload = function() {
+		//console.log({{ data }});
+		{% if data %}
+		var cy = cytoscape({
+
+		  container: document.getElementById('cy'), // container to render in
+
+		  elements: [ // list of graph elements to start with
+			{% for x in nodes %}
+			{ // node a
+				data: { id: '{{ x.id }}' },	
+				position: {x: {{ x.xpos }},y: {{ x.ypos }}}
+			},
+			{% endfor %}
+			{% for d in data %}
+			{ // edge ab
+				data: { id: '{{ d.u }}{{ d.v }}', source: '{{ d.u }}', target: '{{ d.v }}',label: '{{ d.weight }}' },
+				classes: 'autorotate'
+			},
+			{% endfor %}
+		  ],
+
+		  style: [ // the stylesheet for the graph
+		    {
+		      selector: 'node',
+		      style: {
+		        'background-color': '#666',
+		        'label': 'data(id)',
+		      }
+		    },
+
+		    {
+		      selector: 'edge',
+		      style: {
+		        'width': 3,
+		        'line-color': '#ccc',
+		        'target-arrow-color': '#ccc',
+		        'target-arrow-shape': 'triangle',
+		        'label': 'data(label)'
+		      }
+		    }
+		  ],
+
+		  layout: {
+		    name: 'grid',
+		    rows: 1
+		  }
+
+		});
+		var cy2 = cytoscape({
+
+		  container: document.getElementById('cy2'), // container to render in
+
+		  elements: [ // list of graph elements to start with
+			{% for x in nodes %}
+			{ // node a
+				data: { id: '{{ x.id }}' },	
+				position: {x: {{ x.xpos }},y: {{ x.ypos }}}
+			},
+			{% endfor %}
+			{% for d in oldgraph %}
+			{ // edge ab
+				data: { id: '{{ d.from_node }}{{ d.to_node }}', source: '{{ d.from_node }}', target: '{{ d.to_node }}',label: '{{ d.weight }}' },
+				classes: 'autorotate'
+			},
+			{% endfor %}
+		  ],
+
+		  style: [ // the stylesheet for the graph
+		    {
+		      selector: 'node',
+		      style: {
+		        'background-color': '#666',
+		        'label': 'data(id)',
+		      }
+		    },
+
+		    {
+		      selector: 'edge',
+		      style: {
+		        'width': 3,
+		        'line-color': '#ccc',
+		        'target-arrow-color': '#ccc',
+		        'target-arrow-shape': 'triangle',
+		        'label': 'data(label)'
+		      }
+		    }
+		  ],
+
+		  layout: {
+		    name: 'grid',
+		    rows: 1
+		  }
+
+		});
+		table = $('#kt_table_1').DataTable({
+			responsive: true,
+		});
+		{% endif %}
+		$( "#kt_form_1" ).validate({
+			// define validation rules
+			rules: {
+				"equation": {
+					required: true
+				},
+				"maxval": {
+					required: true
+				},
+				"minval": {
+					required: true
+				},
+				"iterations": {
+					required: true
+				},
+			},
+			//display error alert on form submit
+			invalidHandler: function(event, validator) {
+				var alert = $('#kt_form_1_msg');
+				alert.removeClass('kt--hide').show();
+				KTUtil.scrollTop();
+			},
+
+			submitHandler: function (form) {
+				form[0].submit(); // submit the form
+			},
+		});
+	};
+</script>
+{% if data %}
+<div class="kt-container kt-container--fluid kt-grid__item kt-grid__item--fluid">
+	<div class="kt-portlet">
+		<div class="kt-portlet__head">
+			<div class="kt-portlet__head-label">
+				<span class="kt-portlet__head-icon">
+					<i class="fa fa-plus"></i>
+				</span>
+				<h3 class="kt-portlet__head-title">
+						Graph
+				</h3>
+			</div>
+		</div>
+		<div class="kt-portlet__body">
+			<div class="row">
+				<div class="col-md-6">
+					<div id="cy"></div>
+				</div>
+				<div class="col-md-6">
+					<div id="cy2"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
+	<div class="kt-portlet">
+		<div class="kt-portlet__head">
+			<div class="kt-portlet__head-label">
+				<span class="kt-portlet__head-icon">
+					<i class="fa fa-plus"></i>
+				</span>
+				<h3 class="kt-portlet__head-title">
+						Result
+				</h3>
+			</div>
+		</div>
+		<div class="kt-portlet__body">
+			<table class="table table-striped- table-bordered table-hover table-checkable" id="kt_table_1">
+				<thead>
+					<tr>
+						<th>From Node</th>
+						<th>To Node</th>
+						<th>Weight</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for d in data %}
+					<tr>
+						<td>{{ d.u }}</td>
+						<td>{{ d.v }}</td>
+						<td>{{ d.weight }}</td>
+					</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+{% endif %}
+{% if error %}
+<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
+	<div class="kt-portlet">
+		<div class="kt-portlet__head">
+			<div class="kt-portlet__head-label">
+				<span class="kt-portlet__head-icon">
+					<i class="fa fa-plus"></i>
+				</span>
+				<h3 class="kt-portlet__head-title">
+						Result
+				</h3>
+			</div>
+		</div>
+		<div class="kt-portlet__body">
+			There is no solution for the given input
+		</div>
+	</div>
+</div>
+{% endif %}
+<!--begin::Portlet-->
+<div class="kt-container  kt-container--fluid  kt-grid__item kt-grid__item--fluid">
+	<div class="kt-portlet">
+		<div class="kt-portlet__head">
+			<div class="kt-portlet__head-label">
+				<span class="kt-portlet__head-icon">
+					<i class="fa fa-plus"></i>
+				</span>
+				<h3 class="kt-portlet__head-title">
+						Calculate Brouvka
+				</h3>
+			</div>
+		</div>
+
+		<!--begin::Form-->
+		<form class="kt-form kt-form--label-right" id="kt_form_1" action="{% url 'brouvka-submit' %}" method="post">
+			{% csrf_token %}
+			<div class="kt-portlet__body">
+				<div class="form-group form-group-last kt-hide">
+					<div class="alert alert-danger" role="alert" id="kt_form_1_msg">
+						<div class="alert-icon"><i class="flaticon-warning"></i></div>
+						<div class="alert-text">
+							Oh snap! Change a few things up and try submitting again.
+						</div>
+						<div class="alert-close">
+							<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+								<span aria-hidden="true"><i class="la la-close"></i></span>
+							</button>
+						</div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label>Number Of Nodes :</label>
+					<input type="text" class="form-control" placeholder="Enter the equation" name="nodes">
+				</div>
+
+				<div id="edges-section">
+
+				</div>
+
+				<div class="form-group">
+					<button type="button" class="form-control btn btn-success" onclick="addEdge()">Add Edge</button>
+				</div>
+
+			</div>
+			<div class="kt-portlet__foot">
+				<div class="kt-form__actions">
+					<div class="row">
+						<div class="col-lg-9 ml-lg-auto">
+							<button type="submit" class="btn btn-brand">Calculate</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+
+		<!--end::Form-->
+
+		<!--end::Portlet-->
+	</div>
+</div>
+{% endblock content %}

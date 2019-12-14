@@ -1,5 +1,6 @@
 from sympy import *
 from sympy.parsing.sympy_parser import parse_expr,standard_transformations,implicit_multiplication_application
+import math
 
 def false_position(equation,xu,xl,xr,iterations,trial,response):
 	if iterations == 0:
@@ -16,6 +17,10 @@ def false_position(equation,xu,xl,xr,iterations,trial,response):
 		if fu*fl > 0:
 			return None
 	xr = xu - (fu * ((xl-xu)/(fl-fu)))
+
+	if math.isnan(xr):
+		return response
+
 	fr = expr.evalf(subs={x:xr})
 	test = fl * fr
 	if test < 0:
@@ -48,7 +53,10 @@ def secant(equation,x1,x0,xr,fr,iterations,trial,response):
 	xr = x1 - (fu * ((x0-x1)/(fl-fu)))
 	newfr = expr.evalf(subs={x:xr})
 
-	if trial > 0 and newfr > fr:
+	if math.isnan(xr):
+		return response
+
+	if trial > 0 and abs(newfr) > abs(fr):
 		return None
 
 	if newfr == 0.0 :
